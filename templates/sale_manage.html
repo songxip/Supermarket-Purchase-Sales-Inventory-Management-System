@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>销售管理</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+        --primary: #6c5ce7;  /* 紫色主色调 */
+        --secondary: #a29bfe;  /* 浅紫色 */
+        --accent: #fd79a8;  /* 粉色强调色 */
+        --success: #00b894;
+        --danger: #d63031;
+        --dark: #2d3436;
+        --light: #f5f6fa;
+        --customer: #4cc9f0;  /* 保留顾客标签颜色 */
+        }
+
+        body {
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        background: linear-gradient(135deg, #74b9ff, #a29bfe, #fd79a8);
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        animation: gradientBG 15s ease infinite;
+        background-size: 400% 400%;
+        }
+
+        @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+        }
+
+        .container {
+        max-width: 1200px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        margin: 40px auto;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h2 {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 25px;
+        position: relative;
+        padding-bottom: 15px;
+        }
+
+        h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        border-radius: 2px;
+        }
+
+        .btn-secondary {
+        background: linear-gradient(135deg, #636e72, #2d3436);
+        border: none;
+        color: white;
+        border-radius: 10px;
+        padding: 8px 16px;
+        transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+        background: linear-gradient(135deg, #2d3436, #636e72);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-primary:hover {
+        background: linear-gradient(135deg, var(--secondary), var(--primary));
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-danger {
+        background: linear-gradient(135deg, var(--danger), #ff7675);
+        border: none;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+        background: linear-gradient(135deg, #ff7675, var(--danger));
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(214, 48, 49, 0.3);
+        }
+
+        #addSaleForm {
+        background: rgba(248, 249, 250, 0.8);
+        padding: 25px;
+        border-radius: 15px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control {
+        border-radius: 10px;
+        padding: 10px 15px;
+        border: 2px solid #eee;
+        transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+
+        .form-label {
+        font-weight: 600;
+        color: var(--dark);
+        margin-bottom: 8px;
+        }
+
+        .table {
+        margin-top: 25px;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .table thead {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        }
+
+        .table th {
+        font-weight: 600;
+        padding: 15px;
+        text-align: center;
+        vertical-align: middle;
+        border: none;
+        }
+
+        .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        text-align: center;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .table tbody tr:nth-child(even) {
+        background-color: rgba(248, 249, 250, 0.5);
+        }
+
+        .table tbody tr:hover {
+        background-color: rgba(162, 155, 254, 0.1);
+        transform: translateX(5px);
+        transition: all 0.2s ease;
+        }
+
+        .badge {
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 500;
+        }
+
+        .bg-primary {
+        background: linear-gradient(135deg, var(--primary), var(--secondary)) !important;
+        }
+
+        .customer-badge {
+        background: linear-gradient(135deg, var(--customer), #00cec9) !important;
+        color: white;
+        }
+
+        .bg-warning {
+        background: linear-gradient(135deg, #fdcb6e, #e17055) !important;
+        color: white !important;
+        }
+
+        .total-price {
+        font-weight: 700;
+        color: var(--primary);
+        }
+
+        .sale-date {
+        color: #636e72;
+        font-size: 0.9em;
+        }
+
+        .action-buttons {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        }
+
+        .alert {
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+            margin: 20px auto;
+        }
+        
+        #addSaleForm {
+            padding: 15px;
+        }
+        
+        .table td, .table th {
+            padding: 8px 10px;
+        }
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> 返回主页
+        </a>
+        <h2 class="mb-0"><i class="bi bi-cash-stack"></i> 销售记录管理</h2>
+        <div style="width: 120px;"></div> <!-- 占位元素保持对称 -->
+    </div>
+
+    <!-- 添加销售记录表单 -->
+    <form id="addSaleForm" class="row g-3">
+        <div class="col-md-3">
+            <label for="product_id" class="form-label"><i class="bi bi-upc-scan"></i> 商品ID</label>
+            <input type="text" class="form-control" id="product_id" required>
+        </div>
+        <div class="col-md-3">
+            <label for="sale_quantity" class="form-label"><i class="bi bi-box-seam"></i> 销售数量</label>
+            <input type="number" class="form-control" id="sale_quantity" required>
+        </div>
+        <div class="col-md-3">
+            <label for="sale_unit_price" class="form-label"><i class="bi bi-currency-yen"></i> 销售单价</label>
+            <input type="number" step="0.01" class="form-control" id="sale_unit_price" required>
+        </div>
+        <div class="col-md-3">
+            <label for="customer_id" class="form-label"><i class="bi bi-person-vcard"></i> 顾客ID</label>
+            <input type="text" class="form-control" id="customer_id" required>
+        </div>
+        <div class="col-md-3">
+            <label for="sale_employee_id" class="form-label"><i class="bi bi-person-badge"></i> 销售员工ID</label>
+            <input type="text" class="form-control" id="sale_employee_id" required>
+        </div>
+        <div class="col-md-3">
+            <label for="sale_date" class="form-label"><i class="bi bi-calendar-event"></i> 销售时间</label>
+            <input type="datetime-local" class="form-control" id="sale_date" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> 添加销售记录
+            </button>
+        </div>
+    </form>
+
+    <!-- 显示销售记录表格 -->
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th><i class="bi bi-receipt"></i> 销售ID</th>
+                <th><i class="bi bi-upc"></i> 商品ID</th>
+                <th><i class="bi bi-box-seam"></i> 数量</th>
+                <th><i class="bi bi-currency-yen"></i> 单价</th>
+                <th><i class="bi bi-cash-stack"></i> 总价</th>
+                <th><i class="bi bi-person-vcard"></i> 顾客ID</th>
+                <th><i class="bi bi-person-badge"></i> 员工ID</th>
+                <th><i class="bi bi-clock-history"></i> 销售时间</th>
+                <th><i class="bi bi-gear"></i> 操作</th>
+            </tr>
+        </thead>
+        <tbody id="saleTableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    // 把 ISO / MySQL 的时间字符串格式化成 "yyyy-MM-dd HH:mm"
+    function formatToMinute(dateStr) {
+        const d = new Date(dateStr);               // 自动解析 2025-06-16 18:34:07 或 2025-06-16T10:34:07Z
+        const pad = n => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} `
+             + `${pad(d.getHours())}:${pad(d.getMinutes())}`;   // 不要 seconds
+    }
+
+    // 加载销售记录
+    function loadSales() {
+        fetch('/api/sales')
+            .then(r => r.json())
+            .then(data => {
+                const tbody = document.getElementById('saleTableBody');
+                tbody.innerHTML = '';
+                data.forEach(sale => {
+                    const row = `<tr>
+                        <td>${sale.sale_id}</td>
+                        <td><span class="badge bg-primary">${sale.product_id}</span></td>
+                        <td>${sale.sale_quantity}</td>
+                        <td>¥${parseFloat(sale.sale_unit_price).toFixed(2)}</td>
+                        <td class="total-price">¥${parseFloat(sale.sale_total_price).toFixed(2)}</td>
+                        <td><span class="badge customer-badge">${sale.customer_id}</span></td>
+                        <td><span class="badge bg-warning text-dark">${sale.sale_employee_id}</span></td>
+                        <td class="sale-date">${formatToMinute(sale.sale_date)}</td>
+                        <td class="action-buttons">
+                            <button class="btn btn-danger btn-sm" onclick="deleteSale('${sale.sale_id}')">
+                                <i class="bi bi-trash"></i> 删除
+                            </button>
+                        </td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
+    }
+
+    // 添加销售记录
+    document.getElementById('addSaleForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        const sale = {
+            product_id: document.getElementById('product_id').value,
+            sale_quantity: document.getElementById('sale_quantity').value,
+            sale_unit_price: document.getElementById('sale_unit_price').value,
+            customer_id: document.getElementById('customer_id').value,
+            sale_employee_id: document.getElementById('sale_employee_id').value,
+            sale_date: document.getElementById('sale_date').value
+        };
+
+        fetch('/api/sales', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(sale)
+        })
+        .then(response =>
+            response.json().then(data => ({
+                status: response.status,
+                ok: response.ok,
+                body: data
+            }))
+        )
+        .then(({ status, ok, body }) => {
+            if (ok) {
+                loadSales();
+                // 清空表单
+                document.getElementById('addSaleForm').reset();
+                // 显示成功提示
+                showAlert('销售记录添加成功！', 'success');
+            } else {
+                showAlert('添加失败：' + (body.error || "未知错误"), 'danger');
+            }
+        })
+        .catch(error => {
+            showAlert('网络或服务器错误：' + error.message, 'danger');
+        });
+    });
+
+    // 删除销售记录
+    function deleteSale(sale_id) {
+        if (confirm('确定要删除这条销售记录吗？此操作不可撤销！')) {
+            fetch(`/api/sales/${sale_id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    loadSales();
+                    showAlert('销售记录已删除！', 'success');
+                } else {
+                    showAlert('删除失败，请重试', 'danger');
+                }
+            })
+            .catch(error => {
+                showAlert('删除失败：' + error.message, 'danger');
+            });
+        }
+    }
+
+    // 显示提示信息
+    function showAlert(message, type) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        alertDiv.style.top = '20px';
+        alertDiv.style.right = '20px';
+        alertDiv.style.zIndex = '9999';
+        alertDiv.style.minWidth = '300px';
+        alertDiv.role = 'alert';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // 5秒后自动消失
+        setTimeout(() => {
+            alertDiv.classList.remove('show');
+            setTimeout(() => alertDiv.remove(), 150);
+        }, 5000);
+    }
+
+    loadSales();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

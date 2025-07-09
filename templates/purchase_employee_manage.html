@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>采购员工管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #1e88e5;  /* 主色调改为蓝色 */
+      --secondary: #64b5f6;  /* 次色调 */
+      --accent: #ff7043;  /* 强调色 */
+      --success: #43a047;
+      --danger: #e53935;
+      --dark: #263238;
+      --light: #f5f7fa;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #bbdefb, #90caf9, #64b5f6);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      animation: gradientBG 15s ease infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px 20px;
+      font-size: 28px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 15px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      font-size: 16px;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-50%) translateX(-3px);
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .table-container {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-top: 25px;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 15px;
+      font-weight: 600;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(100, 181, 246, 0.1);
+      transform: translateX(5px);
+    }
+
+    .table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      vertical-align: middle;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background-color: rgba(67, 160, 71, 0.2);
+      color: var(--success);
+    }
+
+    .status-inactive {
+      background-color: rgba(229, 57, 53, 0.2);
+      color: var(--danger);
+    }
+
+    .btn {
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #43a047, #66bb6a);
+      border: none;
+      box-shadow: 0 5px 15px rgba(67, 160, 71, 0.3);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 5px 15px rgba(30, 136, 229, 0.3);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--danger), #ef5350);
+      border: none;
+      box-shadow: 0 5px 15px rgba(229, 57, 53, 0.3);
+    }
+
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 15px 20px;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 2px solid #eee;
+      padding: 10px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.2);
+    }
+
+    .input-group-text {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      header {
+        padding: 20px 15px;
+        font-size: 22px;
+      }
+      
+      .back-btn {
+        padding: 5px 10px;
+        font-size: 14px;
+        left: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('index') }}" class="back-btn"><i class="fas fa-arrow-left"></i> 返回首页</a>
+    📋 采购员工管理
+  </header>
+
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4>员工列表</h4>
+      <button class="btn btn-success" onclick="openPurchaseAddModal()"><i class="fas fa-plus"></i> 添加员工</button>
+    </div>
+    
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" placeholder="搜索员工编号、姓名或联系方式" id="purchaseSearchInput" oninput="filterPurchaseEmployees()">
+      <span class="input-group-text"><i class="fas fa-search"></i></span>
+    </div>
+
+    <table class="table table-bordered table-hover">
+      <thead class="table-primary">
+        <tr>
+          <th>员工编号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>联系方式</th>
+          <th>入职日期</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="purchase-employee-table">
+        <tr>
+          <!-- 初始为空，数据由 JS 动态插入 -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="modal fade" id="purchaseEmployeeModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="purchaseEmployeeForm" onsubmit="submitPurchaseEmployee(event)">
+          <div class="modal-header">
+            <h5 class="modal-title">添加/编辑员工</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="purchaseEditIndex">
+            <div class="mb-3">
+              <label for="purchaseEmpId" class="form-label">员工编号</label>
+              <input type="text" class="form-control" id="purchaseEmpId" required>
+            </div>
+            <div class="mb-3">
+              <label for="purchaseEmpName" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="purchaseEmpName" required>
+            </div>
+            <div class="mb-3">
+              <label for="purchaseEmpGender" class="form-label">性别</label>
+              <select class="form-select" id="purchaseEmpGender">
+                <option>男</option>
+                <option>女</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="purchaseEmpAge" class="form-label">年龄</label>
+              <input type="number" class="form-control" id="purchaseEmpAge" required min="18" max="100">
+            </div>          
+            <div class="mb-3">
+              <label for="purchaseEmpPhone" class="form-label">联系方式</label>
+              <input type="text" class="form-control" id="purchaseEmpPhone">
+            </div>
+            <div class="mb-3">
+              <label for="purchaseEmpDate" class="form-label">入职日期</label>
+              <input type="date" class="form-control" id="purchaseEmpDate">
+            </div>
+            <div class="mb-3">
+              <label for="purchaseEmpStatus" class="form-label">状态</label>
+              <select class="form-select" id="purchaseEmpStatus">
+                <option>在职</option>
+                <option>离职</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">保存</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const purchaseModal = new bootstrap.Modal(document.getElementById('purchaseEmployeeModal'));
+    let allPurchaseEmployees = [];  // 缓存采购员工数据
+
+    // 加载采购员工列表
+    function loadPurchaseEmployees() {
+      axios.get('/api/purchase_employees').then(res => {
+        allPurchaseEmployees = res.data;
+        renderPurchaseEmployees(allPurchaseEmployees);
+      });
+    }
+
+    // 渲染采购员工表格
+    function renderPurchaseEmployees(data) {
+      const tbody = document.getElementById("purchase-employee-table");
+      tbody.innerHTML = "";
+      data.forEach(emp => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${emp.purchase_employee_id}</td>
+          <td>${emp.purchase_employee_name}</td>
+          <td>${emp.purchase_employee_gender}</td>
+          <td>${emp.purchase_employee_age}</td>
+          <td>${emp.purchase_employee_phone}</td>
+          <td>${emp.purchase_employee_hire_date ? new Date(emp.purchase_employee_hire_date).toISOString().substring(0, 10) : ''}</td>
+          <td>${emp.purchase_employee_status ? '在职' : '离职'}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" onclick="editPurchaseEmployee(this)">编辑</button>
+            <button class="btn btn-sm btn-danger" onclick="deletePurchaseEmployee('${emp.purchase_employee_id}')">删除</button>
+          </td>
+        `;
+      });
+    }
+
+    // 搜索过滤采购员工
+    function filterPurchaseEmployees() {
+      const keyword = document.getElementById("purchaseSearchInput").value.toLowerCase();
+      const filtered = allPurchaseEmployees.filter(emp =>
+        emp.purchase_employee_id.toLowerCase().includes(keyword) ||
+        emp.purchase_employee_name.toLowerCase().includes(keyword) ||
+        emp.purchase_employee_phone.toLowerCase().includes(keyword)
+      );
+      renderPurchaseEmployees(filtered);
+    }
+
+    window.onload = loadPurchaseEmployees;
+
+    // 打开添加采购员工弹窗
+    function openPurchaseAddModal() {
+      document.getElementById("purchaseEmployeeForm").reset();
+      document.getElementById("purchaseEditIndex").value = '';
+      document.getElementById("purchaseEmpId").disabled = false;
+      purchaseModal.show();
+    }
+
+    // 保存采购员工
+    function submitPurchaseEmployee(event) {
+      event.preventDefault();
+      const id = document.getElementById("purchaseEmpId").value;
+      const emp = {
+        purchase_employee_id: id,
+        purchase_employee_name: document.getElementById("purchaseEmpName").value,
+        purchase_employee_gender: document.getElementById("purchaseEmpGender").value,
+        purchase_employee_age: parseInt(document.getElementById("purchaseEmpAge").value),
+        purchase_employee_phone: document.getElementById("purchaseEmpPhone").value,
+        purchase_employee_hire_date: document.getElementById("purchaseEmpDate").value,
+        purchase_employee_status: document.getElementById("purchaseEmpStatus").value === "在职"
+      };
+
+      if (document.getElementById("purchaseEmpId").disabled) {
+        axios.put(`/api/purchase_employees/${id}`, emp).then(() => {
+          purchaseModal.hide();
+          loadPurchaseEmployees();
+        });
+      } else {
+        axios.post('/api/purchase_employees', emp).then(() => {
+          purchaseModal.hide();
+          loadPurchaseEmployees();
+        });
+      }
+    }
+
+    // 编辑采购员工
+    function editPurchaseEmployee(button) {
+      const row = button.parentElement.parentElement;
+      const cells = row.children;
+      document.getElementById("purchaseEmpId").value = cells[0].innerText;
+      document.getElementById("purchaseEmpName").value = cells[1].innerText;
+      document.getElementById("purchaseEmpGender").value = cells[2].innerText;
+      document.getElementById("purchaseEmpAge").value = cells[3].innerText;
+      document.getElementById("purchaseEmpPhone").value = cells[4].innerText;
+      document.getElementById("purchaseEmpDate").value = cells[5].innerText;
+      document.getElementById("purchaseEmpStatus").value = cells[6].innerText;
+      document.getElementById("purchaseEmpId").disabled = true;
+      purchaseModal.show();
+    }
+
+    // 删除采购员工
+    function deletePurchaseEmployee(id) {
+      if (confirm("确定要删除该员工吗？")) {
+        axios.delete(`/api/purchase_employees/${id}`).then(() => loadPurchaseEmployees());
+      }
+    }
+  </script>
+</body>
+</html>

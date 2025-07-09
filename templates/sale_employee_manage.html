@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>销售员工管理</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6c5ce7;
+      --secondary: #a29bfe;
+      --accent: #fd79a8;
+      --success: #00b894;
+      --danger: #d63031;
+      --dark: #2d3436;
+      --light: #f5f6fa;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #74b9ff, #a29bfe, #fd79a8);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      animation: gradientBG 15s ease infinite;
+      background-size: 400% 400%;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px 20px;
+      font-size: 28px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-back {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-50%) translateX(-3px);
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+      .btn-back {
+        padding: 3px 10px;
+        font-size: 14px;
+        left: 10px;
+      }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+
+    .main-card {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .page-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 2px;
+    }
+
+    .action-btn {
+      min-width: 120px;
+      height: 40px;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .add-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+    }
+
+    .add-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+    }
+
+    .add-btn:active {
+      transform: translateY(1px);
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      margin-right: 15px;
+    }
+
+    .search-input {
+      padding-left: 15px;
+      border-radius: 10px;
+    }
+
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
+
+    .table-container {
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      margin-top: 25px;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 15px;
+      font-weight: 600;
+    }
+
+    .table tbody tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(162, 155, 254, 0.1);
+      transform: translateX(5px);
+    }
+
+    .table td {
+      padding: 12px 15px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      vertical-align: middle;
+    }
+
+    .status-badge {
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background-color: rgba(0, 184, 148, 0.2);
+      color: var(--success);
+    }
+
+    .status-inactive {
+      background-color: rgba(214, 48, 49, 0.2);
+      color: var(--danger);
+    }
+
+    .btn-sm {
+      min-width: 70px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-sm:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-sm:active {
+      transform: translateY(1px);
+    }
+
+    .modal-content {
+      border-radius: 15px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 15px 20px;
+    }
+
+    .modal-title {
+      font-weight: 700;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 2px solid #eee;
+      padding: 10px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+
+    .modal-footer {
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      padding: 15px 20px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--secondary), var(--primary));
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #636e72, #2d3436);
+      border: none;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #2d3436, #636e72);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+      
+      .search-box {
+        margin-right: 0;
+        margin-bottom: 15px;
+      }
+      
+      .action-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="{{ url_for('index') }}" class="btn btn-back">
+      <i class="fas fa-arrow-left"></i> 返回首页
+    </a>
+    <i class="fas fa-user-tie" style="margin-right: 10px;"></i>销售员工管理
+  </header>
+
+  <div class="container">
+    <div class="main-card">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div class="search-box">
+          <input type="text" class="form-control search-input" placeholder="搜索员工编号、姓名或联系方式" id="saleSearchInput" oninput="filterSaleEmployees()">
+        </div>
+        <button class="action-btn add-btn" onclick="openSaleAddModal()">
+          <i class="fas fa-plus"></i>添加员工
+        </button>
+      </div>
+
+      <div class="table-container">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>员工编号</th>
+              <th>姓名</th>
+              <th>性别</th>
+              <th>年龄</th>
+              <th>联系方式</th>
+              <th>入职日期</th>
+              <th>状态</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="sale-employee-table">
+            <tr>
+              <!-- 初始为空，数据由 JS 动态插入 -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="saleEmployeeModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="saleEmployeeForm" onsubmit="submitSaleEmployee(event)">
+          <div class="modal-header">
+            <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>添加/编辑员工</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="saleEditIndex">
+            <div class="mb-3">
+              <label for="saleEmpId" class="form-label">员工编号</label>
+              <input type="text" class="form-control" id="saleEmpId" required>
+            </div>
+            <div class="mb-3">
+              <label for="saleEmpName" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="saleEmpName" required>
+            </div>
+            <div class="mb-3">
+              <label for="saleEmpGender" class="form-label">性别</label>
+              <select class="form-select" id="saleEmpGender">
+                <option>男</option>
+                <option>女</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="saleEmpAge" class="form-label">年龄</label>
+              <input type="number" class="form-control" id="saleEmpAge" required min="18" max="100">
+            </div>          
+            <div class="mb-3">
+              <label for="saleEmpPhone" class="form-label">联系方式</label>
+              <input type="text" class="form-control" id="saleEmpPhone">
+            </div>
+            <div class="mb-3">
+              <label for="saleEmpDate" class="form-label">入职日期</label>
+              <input type="date" class="form-control" id="saleEmpDate">
+            </div>
+            <div class="mb-3">
+              <label for="saleEmpStatus" class="form-label">状态</label>
+              <select class="form-select" id="saleEmpStatus">
+                <option>在职</option>
+                <option>离职</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>保存</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-times me-2"></i>取消</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const saleModal = new bootstrap.Modal(document.getElementById('saleEmployeeModal'));
+    let allSaleEmployees = [];  // 缓存销售员工数据
+
+    // 加载销售员工列表
+    function loadSaleEmployees() {
+      axios.get('/api/sale_employees').then(res => {
+        allSaleEmployees = res.data;
+        renderSaleEmployees(allSaleEmployees);
+      });
+    }
+
+    // 渲染销售员工表格
+    function renderSaleEmployees(data) {
+      const tbody = document.getElementById("sale-employee-table");
+      tbody.innerHTML = "";
+      data.forEach(emp => {
+        const row = tbody.insertRow();
+        row.innerHTML = `
+          <td>${emp.sale_employee_id}</td>
+          <td>${emp.sale_employee_name}</td>
+          <td>${emp.sale_employee_gender}</td>
+          <td>${emp.sale_employee_age}</td>
+          <td>${emp.sale_employee_phone}</td>
+          <td>${emp.sale_employee_hire_date ? new Date(emp.sale_employee_hire_date).toISOString().substring(0, 10) : ''}</td>
+          <td><span class="status-badge ${emp.sale_employee_status ? 'status-active' : 'status-inactive'}">${emp.sale_employee_status ? '在职' : '离职'}</span></td>
+          <td>
+            <button class="btn btn-sm btn-info me-2" onclick="editSaleEmployee(this)"><i class="fas fa-edit me-1"></i>编辑</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteSaleEmployee('${emp.sale_employee_id}')"><i class="fas fa-trash-alt me-1"></i>删除</button>
+          </td>
+        `;
+      });
+    }
+
+    // 搜索过滤销售员工
+    function filterSaleEmployees() {
+      const keyword = document.getElementById("saleSearchInput").value.toLowerCase();
+      const filtered = allSaleEmployees.filter(emp =>
+        emp.sale_employee_id.toLowerCase().includes(keyword) ||
+        emp.sale_employee_name.toLowerCase().includes(keyword) ||
+        emp.sale_employee_phone.toLowerCase().includes(keyword)
+      );
+      renderSaleEmployees(filtered);
+    }
+
+    window.onload = loadSaleEmployees;
+
+    // 打开添加销售员工弹窗
+    function openSaleAddModal() {
+      document.getElementById("saleEmployeeForm").reset();
+      document.getElementById("saleEditIndex").value = '';
+      document.getElementById("saleEmpId").disabled = false;
+      saleModal.show();
+    }
+
+    // 保存销售员工
+    function submitSaleEmployee(event) {
+      event.preventDefault();
+      const id = document.getElementById("saleEmpId").value;
+      const emp = {
+        sale_employee_id: id,
+        sale_employee_name: document.getElementById("saleEmpName").value,
+        sale_employee_gender: document.getElementById("saleEmpGender").value,
+        sale_employee_age: parseInt(document.getElementById("saleEmpAge").value),
+        sale_employee_phone: document.getElementById("saleEmpPhone").value,
+        sale_employee_hire_date: document.getElementById("saleEmpDate").value,
+        sale_employee_status: document.getElementById("saleEmpStatus").value === "在职"
+      };
+
+      if (document.getElementById("saleEmpId").disabled) {
+        axios.put(`/api/sale_employees/${id}`, emp).then(() => {
+          saleModal.hide();
+          loadSaleEmployees();
+        });
+      } else {
+        axios.post('/api/sale_employees', emp).then(() => {
+          saleModal.hide();
+          loadSaleEmployees();
+        });
+      }
+    }
+
+    // 编辑销售员工
+    function editSaleEmployee(button) {
+      const row = button.parentElement.parentElement;
+      const cells = row.children;
+      document.getElementById("saleEmpId").value = cells[0].innerText;
+      document.getElementById("saleEmpName").value = cells[1].innerText;
+      document.getElementById("saleEmpGender").value = cells[2].innerText;
+      document.getElementById("saleEmpAge").value = cells[3].innerText;
+      document.getElementById("saleEmpPhone").value = cells[4].innerText;
+      document.getElementById("saleEmpDate").value = cells[5].innerText;
+      document.getElementById("saleEmpStatus").value = cells[6].innerText === "在职" ? "在职" : "离职";
+      document.getElementById("saleEmpId").disabled = true;
+      saleModal.show();
+    }
+
+    // 删除销售员工
+    function deleteSaleEmployee(id) {
+      if (confirm("确定要删除该员工吗？")) {
+        axios.delete(`/api/sale_employees/${id}`).then(() => loadSaleEmployees());
+      }
+    }
+  </script>
+</body>
+</html>

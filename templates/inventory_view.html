@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>库存查看</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6a1b9a;
+      --secondary: #4a148c;
+      --accent: #9c27b0;
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      margin: 0;
+      padding: 0;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      position: absolute;
+      left: 50px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    header a:hover {
+      background: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      background-color: white;
+    }
+
+    .card-header {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      color: white;
+      padding: 20px;
+      font-size: 24px;
+      font-weight: 600;
+      text-align: center;
+      border-bottom: none;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(120deg, #757575, #616161);
+      border: none;
+      font-weight: 600;
+      padding: 10px 20px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      margin: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(120deg, #616161, #757575);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-secondary:active {
+      transform: translateY(1px);
+    }
+
+    .table {
+      margin: 0;
+    }
+
+    .table th {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      padding: 16px;
+      font-size: 16px;
+      border: none;
+    }
+
+    .table td {
+      text-align: center;
+      padding: 14px;
+      font-size: 16px;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .table tbody tr:nth-child(even) {
+      background-color: #fafcff;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f5f0ff;
+    }
+
+    .stock-low {
+      color: #d32f2f;
+      font-weight: bold;
+    }
+
+    .stock-normal {
+      color: #388e3c;
+      font-weight: bold;
+    }
+
+    .stock-high {
+      color: #1976d2;
+      font-weight: bold;
+    }
+
+    footer {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 40px;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 992px) {
+      header a {
+        position: static;
+        transform: none;
+        margin-bottom: 15px;
+        display: inline-flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    库存管理系统
+    <a href="/"><i class="fas fa-arrow-left me-1"></i>返回首页</a>
+  </header>
+
+  <main class="container">
+    <div class="card">
+      <div class="card-header">
+        <i class="fas fa-boxes me-2"></i>库存查看
+      </div>
+      
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>商品ID</th>
+              <th>商品名称</th>
+              <th>商品类别</th>
+              <th>当前库存</th>
+              <th>库存状态</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table">
+            <!-- 动态插入商品库存 -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 超市商品进销存管理系统 | 华南理工大学数据库课程设计
+  </footer>
+
+  <script>
+    window.onload = function() {
+      fetch('/api/products')
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById('inventory-table');
+          tbody.innerHTML = '';
+          
+          data.forEach(p => {
+            // 根据库存量确定状态
+            let stockStatus = '';
+            let stockClass = '';
+            
+            if (p.product_stock_quantity < 10) {
+              stockStatus = '库存不足';
+              stockClass = 'stock-low';
+            } else if (p.product_stock_quantity > 50) {
+              stockStatus = '库存充足';
+              stockClass = 'stock-high';
+            } else {
+              stockStatus = '库存正常';
+              stockClass = 'stock-normal';
+            }
+            
+            const row = `
+              <tr>
+                <td>${p.product_id}</td>
+                <td>${p.product_name}</td>
+                <td>${p.product_category}</td>
+                <td>${p.product_stock_quantity}</td>
+                <td class="${stockClass}">${stockStatus}</td>
+              </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+          });
+        })
+        .catch(err => {
+          console.error('加载库存数据失败:', err);
+          alert('加载库存数据失败，请稍后重试');
+        });
+    };
+  </script>
+</body>
+</html>

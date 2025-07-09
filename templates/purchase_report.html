@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>采购报表</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #2e7d32;
+      --secondary: #1b5e20;
+      --accent: #4caf50;
+      --light: #f8f9fa;
+      --dark: #212529;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      margin: 0;
+      padding: 0;
+      color: var(--dark);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(120deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    header a {
+      color: white;
+      text-decoration: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px 16px;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      position: absolute;
+      left: 50px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    header a:hover {
+      background: rgba(255, 255, 255, 0.3);
+      text-decoration: none;
+    }
+
+    main {
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .btn-primary {
+      background: linear-gradient(120deg, var(--primary), var(--accent));
+      border: none;
+      font-weight: 600;
+      padding: 12px 24px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+      border-radius: 10px;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(120deg, var(--secondary), var(--primary));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(46, 125, 50, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
+
+    .form-control {
+      border: 1px solid #e1e5eb;
+      border-radius: 10px;
+      padding: 12px 15px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .table {
+      background-color: #fff;
+      margin-top: 30px;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+    }
+
+    .table th {
+      background: linear-gradient(to bottom, var(--primary), var(--secondary));
+      color: white;
+      font-weight: 600;
+      text-align: center;
+      padding: 16px;
+      font-size: 16px;
+      border: none;
+    }
+
+    .table td {
+      text-align: center;
+      padding: 14px;
+      font-size: 16px;
+      border-bottom: 1px solid #f0f2f5;
+    }
+
+    .table tbody tr:nth-child(even) {
+      background-color: #fafcff;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f0f7ff;
+    }
+
+    .fw-bold {
+      font-weight: 600;
+    }
+
+    .charts {
+      display: flex;
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .charts > div {
+      flex: 1;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .charts > div:hover {
+      transform: translateY(-5px);
+    }
+
+    .charts h4 {
+      color: var(--dark);
+      margin-bottom: 20px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .charts h4 i {
+      color: var(--primary);
+    }
+
+    footer {
+      background: linear-gradient(to right, var(--primary), var(--secondary));
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 40px;
+      box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    #summaryStats {
+      background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+      border-left: 4px solid var(--accent);
+      padding: 20px;
+      border-radius: 10px;
+      margin: 25px 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 992px) {
+      .charts {
+        flex-direction: column;
+      }
+      
+      header a {
+        position: static;
+        transform: none;
+        margin-bottom: 15px;
+        display: inline-flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    采购报表
+    <a href="{{ url_for('index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left me-1"></i>返回主页</a>
+  </header>
+
+  <main class="container mt-4">
+    <!-- 时间范围筛选 -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <label for="start_date" class="form-label">起始时间</label>
+        <input type="date" class="form-control" id="start_date">
+      </div>
+      <div class="col-md-4">
+        <label for="end_date" class="form-label">结束时间</label>
+        <input type="date" class="form-control" id="end_date">
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary w-100" onclick="generateReport()">生成报表</button>
+      </div>
+    </div>
+
+    <!-- 报表表格 -->
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>商品ID</th>
+          <th>商品名称</th>
+          <th>采购数量</th>
+          <th>采购总额</th>
+        </tr>
+      </thead>
+      <tbody id="reportTableBody"></tbody>
+    </table>
+
+    <!-- 汇总统计 -->
+    <div id="summaryStats" class="fw-bold mt-3"></div>
+
+    <!-- 可视化图表 -->
+    <div class="charts">
+      <div>
+        <h4><i class="fas fa-chart-bar"></i>采购数量统计</h4>
+        <canvas id="qtyChart" height="100"></canvas>
+      </div>
+      <div>
+        <h4><i class="fas fa-chart-pie"></i>采购总额统计</h4>
+        <canvas id="amtChart" height="100"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 超市商品进销存管理系统 | 华南理工大学数据库课程设计
+  </footer>
+
+  <script>
+    let allPurchases = [];
+    let productNameMap = {};  // 用于存储商品ID与商品名称的映射
+    let qtyChart = null;
+    let amtChart = null;
+
+    window.onload = function () {
+      fetch("/api/purchases")
+        .then(res => res.json())
+        .then(data => {
+          allPurchases = data;
+
+          // 假设从后端获取商品ID和名称的映射
+          fetch("/api/products")  // 假设后端有这个API
+            .then(res => res.json())
+            .then(products => {
+              productNameMap = products.reduce((map, product) => {
+                map[product.product_id] = product.product_name;
+                return map;
+              }, {});
+            })
+            .catch(err => alert("加载商品名称失败：" + err.message));
+        })
+        .catch(err => alert("加载采购数据失败：" + err.message));
+    };
+
+    function generateReport() {
+      const start = document.getElementById("start_date").value;
+      const end = document.getElementById("end_date").value;
+
+      if (!start || !end) {
+        alert("请先选择开始日期和结束日期！");
+        return;
+      }
+
+      const startDate = new Date(start + "T00:00:00");
+      const endDate = new Date(end + "T23:59:59");
+
+      const tbody = document.getElementById("reportTableBody");
+      const summary = document.getElementById("summaryStats");
+
+      const filtered = allPurchases.filter(purchase => {
+        const date = new Date(purchase.purchase_date);
+        return date >= startDate && date <= endDate;
+      });
+
+      const stats = {};
+      let totalQty = 0, totalAmount = 0;
+
+      filtered.forEach(purchase => {
+        const id = purchase.product_id;
+        const qty = parseInt(purchase.purchase_quantity);
+        const amt = parseFloat(purchase.purchase_total_price);
+
+        totalQty += qty;
+        totalAmount += amt;
+
+        if (!stats[id]) {
+          stats[id] = { quantity: 0, total: 0 };
+        }
+        stats[id].quantity += qty;
+        stats[id].total += amt;
+      });
+
+      // 更新表格
+      tbody.innerHTML = '';
+      const labels = [];
+      const dataQty = [];
+      const dataAmt = [];
+
+      for (let pid in stats) {
+        const { quantity, total } = stats[pid];
+        const productName = productNameMap[pid] || `未知商品 (${pid})`;  // 使用商品名称
+
+        tbody.innerHTML += `
+          <tr>
+            <td>${pid}</td>
+            <td>${productName}</td>
+            <td>${quantity}</td>
+            <td>¥${total.toFixed(2)}</td>
+          </tr>
+        `;
+        labels.push(productName);  // 使用商品名称作为标签
+        dataQty.push(quantity);
+        dataAmt.push(total);
+      }
+
+      summary.innerText = `总采购数量：${totalQty}，总采购额：¥${totalAmount.toFixed(2)}`;
+
+      // 更新采购数量图表
+      const qtyCtx = document.getElementById('qtyChart').getContext('2d');
+      if (qtyChart) qtyChart.destroy();  // 如果已存在旧图表，先销毁
+      qtyChart = new Chart(qtyCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '采购数量',
+            data: dataQty,
+            backgroundColor: 'rgba(67, 160, 71, 0.6)',
+            borderColor: 'rgba(67, 160, 71, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: '商品采购数量统计图',
+              font: {
+                size: 18
+              }
+            }
+          }
+        }
+      });
+
+      // 更新采购总额图表
+      const amtCtx = document.getElementById('amtChart').getContext('2d');
+      if (amtChart) amtChart.destroy();  // 如果已存在旧图表，先销毁
+      amtChart = new Chart(amtCtx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '采购总额 (¥)',
+            data: dataAmt,
+            backgroundColor: 'rgba(102, 187, 106, 0.6)',
+            borderColor: 'rgba(102, 187, 106, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: '商品采购总额统计图',
+              font: {
+                size: 18
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
